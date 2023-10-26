@@ -1,11 +1,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 
-const app = express(); // express 서버 생성
+import authRouter from './routes/authRouter.js';
 
-app.get('/', (req, res) => {
-  res.status(200).send('[muroom studio] Hello, world.');
-});
+import app from './app.js';
 
 // 서버 시작
 const port = process.env.PORT || 8080;
