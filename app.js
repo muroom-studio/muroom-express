@@ -4,6 +4,8 @@ import cors from 'cors';
 
 import authRouter from './routes/authRouter.js';
 
+dotenv.config({ path: './config.env' });
+
 const app = express(); // express 서버 생성
 
 app.use(cors());

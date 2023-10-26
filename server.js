@@ -1,10 +1,8 @@
-import express from 'express';
 import dotenv from 'dotenv';
-import cors from 'cors';
-
-import authRouter from './routes/authRouter.js';
 
 import app from './app.js';
+
+dotenv.config({ path: './config.env' });
 
 // 서버 시작
 const port = process.env.PORT || 8080;
