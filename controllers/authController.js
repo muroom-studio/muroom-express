@@ -18,10 +18,20 @@ class AuthController {
       }
     );
 
+    const kakaoUserAccessToken = kakaoResponse.data.access_token;
+
+    const kakaoUserResponse = await axios.get('https://kapi.kakao.com/v2/user/me', {
+      headers: {
+        Authorization: `Bearer ${kakaoUserAccessToken}`,
+      },
+    });
+
+    console.log('data: ', kakaoUserResponse.data);
+
     res.status(201).json({
       status: 'success',
       message: '카카오 로그인 성공',
-      accessToken: kakaoResponse.data.access_token,
+      // accessToken: kakaoResponse.data.access_token,
     });
   };
 }
