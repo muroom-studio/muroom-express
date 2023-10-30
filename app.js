@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
-import authRouter from './routes/authRouter.js';
+import userRouter from './routes/userRouter.js';
 
 dotenv.config({ path: './config.env' });
 
@@ -19,6 +19,6 @@ app.get('/', (req, res) => {
   res.status(200).send('[muroom studio] Hello, world.');
 });
 
-app.use('/auth', authRouter);
+app.use('/users', userRouter);
 
 export default app;
