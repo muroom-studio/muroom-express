@@ -19,7 +19,6 @@ class AuthController {
       },
     });
 
-    console.log('data: ', kakaoUserResponse.data);
     const name = kakaoUserResponse.data.properties.nickname;
     const profileImage = kakaoUserResponse.data.properties.profile_image;
     const email = kakaoUserResponse.data.kakao_account.email;
@@ -52,7 +51,7 @@ class AuthController {
     const accessToken = req.headers.authorization;
 
     if (!accessToken) {
-      return res.status(401).json({ message: '액세스 토큰이 없습니다.' });
+      return res.status(401).json({ message: '[verifyKakaoToken] 액세스 토큰이 없습니다.' });
     }
 
     try {
@@ -64,7 +63,7 @@ class AuthController {
 
       // 만약 유효하지 않은 토큰이면 에러를 발생시킵니다.
       if (validationResponse.data.expiresInMillis < 0) {
-        return res.status(401).json({ message: '유효하지 않은 토큰입니다.' });
+        return res.status(401).json({ message: '[verifyKakaoToken] 유효하지 않은 토큰입니다.' });
       }
 
       const kakaoUserResponse = await axios.get('https://kapi.kakao.com/v2/user/me', {
@@ -75,12 +74,11 @@ class AuthController {
       if (!kakaoUserResponse) {
         return res.status(401).json({ message: '인증되지 않는 유저입니다. 다시 로그인해주십시오.' });
       }
+
       const email = kakaoUserResponse.data.kakao_account.email;
       const userFound = await User.findOne({ email });
 
       req.user = userFound;
-
-      console.log('user found: ', userFound);
 
       // 토큰이 유효하면 다음 미들웨어로 이동합니다.
       next();
@@ -90,19 +88,26 @@ class AuthController {
     }
   };
 
-  // if(validationResponse.data.expiresInMillis < 0) {
-  //   return res.status(401).json({
-  //     status: 'fail',
-  //     message: '만료된 토큰입니다.',
-  //   });
-  // }
-  // if(validationResponse.data.expiresInMillis < 1800000) {
-  //   const refreshResponse = await axios.post(
-  //     `https://kauth.kakao.com/oauth/token?grant_type=refresh_token&client_id=${process.env.KAKAO_REST_API_KEY}&refresh_token=${validationResponse.data.refresh_token}`
-  //   );
-  //   req.headers.authorization = refreshResponse.data.access_token;
-  // }
-  // delete;
+  kakaoLogout = async (req, res) => {
+    const accessToken = req.headers.authorization;
+
+    if (!accessToken) {
+      return res.status(401).json({ message: '[kakaoLogout] 액세스 토큰이 없습니다.' });
+    }
+
+    try {
+      await axios.post('https://kapi.kakao.com/v1/user/logout', null, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      return res.status(200).json({ message: '카카오 로그아웃 성공' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ headers: req.headers, message: '카카오 로그아웃 중 오류가 발생했습니다.' });
+    }
+  };
 }
 
 export default AuthController;
